@@ -5,14 +5,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class Serializer {
+public class SerializeUtils {
 
     public static void serializeObject(Object o, String fileName) {
         try (FileOutputStream fos = new FileOutputStream(fileName);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(o);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка сохранения в файл. Не найден класс для сериализации.");
         }
     }
 
@@ -22,7 +22,7 @@ public class Serializer {
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             o = ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка считывания файла. Не найден класс для десериализации.");
         }
         return o;
     }
@@ -39,7 +39,7 @@ public class Serializer {
                 zos.write(buffer, 0, length);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка при архивировании файла. Не найден класс для архивирования.");
         }
     }
 
@@ -58,7 +58,7 @@ public class Serializer {
                 fos.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Ошибка при разархивировании файла. Не найден класс для разархивирования.");
         }
     }
 }
