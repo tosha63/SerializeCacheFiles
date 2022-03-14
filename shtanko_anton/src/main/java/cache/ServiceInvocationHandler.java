@@ -1,7 +1,7 @@
 package cache;
 
 import model.*;
-import serialization.SerializeUtils;
+import utils.SerializeUtils;
 
 import java.io.File;
 import java.lang.reflect.InvocationHandler;
@@ -24,33 +24,35 @@ public class ServiceInvocationHandler implements InvocationHandler {
         String fileName = Arrays.toString((Object[]) args[0]);
         String fileNameBin = fileName + ".bin";
         String fileNameZip = fileName + ".zip";
-        String filePathBinFile = filePath + "files\\" + fileNameBin;
-        String filePathZipFile = filePath + "zip\\" + fileNameZip;
-        String filePathFileFromZip = filePath + "filesfromzip\\";
-
+        String filePathBinFile = null;
+        String filePathZipFile = null;
+        String filePathFileFromZip = null;
+        if (filePath != null) {
+            filePathBinFile = filePath + "files\\" + fileNameBin;
+            filePathZipFile = filePath + "zip\\" + fileNameZip;
+            filePathFileFromZip = filePath + "filesfromzip\\";
+        }
         Object object = null;
         if (method.isAnnotationPresent(Cachable.class)) {
             System.out.println("Обнаружена аннотация " + Cachable.class.getSimpleName() + ". Ищем сохраненный результат.");
-            Cachable compression = method.getAnnotation(Cachable.class);
-            File files = new File(filePathBinFile);
-            if (files.exists()) {
-                if (service instanceof ListServiceImpl) {
-                    object = (ListServiceImpl) SerializeUtils.deSerializeObject(files.getAbsolutePath());
-                } else if (service instanceof TimeServiceImpl) {
-                    TimeResult timeResult = (TimeResult) SerializeUtils.deSerializeObject(files.getAbsolutePath());
-                    object = timeResult;
+            Cachable cachable = method.getAnnotation(Cachable.class);
+            if (filePathBinFile != null) {
+                File files = new File(filePathBinFile);
+                if (files.exists()) {
+                    object = SerializeUtils.deSerializeObject(files.getAbsolutePath());
+                    if (cachable.zip()) {
+                        SerializeUtils.zipDeSerializeFile(filePathZipFile, filePathFileFromZip);
+                    }
+                    System.out.println("Возвращаем КЭШированное значение");
+                    System.out.println(object);
                 }
-                if (compression.zip()) {
-                    SerializeUtils.zipDeSerializeFile(filePathZipFile, filePathFileFromZip);
+                else {
+                    object = service.doWork(args);
+                    SerializeUtils.serializeObject(object, filePathBinFile);
+                    SerializeUtils.zipSerializeFile(filePathBinFile, filePathZipFile, fileNameBin);
+                    System.out.println("КЭШируем результат и возвращаем его");
+                    System.out.println(object);
                 }
-                System.out.println("Возвращаем КЭШированное значение");
-                System.out.println(object);
-            } else  {
-                object = method.invoke(service, args);
-                SerializeUtils.serializeObject(object, filePathBinFile);
-                SerializeUtils.zipSerializeFile(filePathBinFile, filePathZipFile, fileNameBin);
-                System.out.println("КЭШируем результат и возвращаем его");
-                System.out.println(object);
             }
 
         } else {

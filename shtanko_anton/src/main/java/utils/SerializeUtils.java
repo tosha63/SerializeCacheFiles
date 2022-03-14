@@ -1,4 +1,4 @@
-package serialization;
+package utils;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
@@ -13,6 +13,8 @@ public class SerializeUtils {
             oos.writeObject(o);
         } catch (IOException e) {
             System.out.println("Ошибка сохранения в файл. Не найден класс для сериализации.");
+        } catch (NullPointerException n) {
+            System.out.println("Не создан каталог для сохранения файлов.");
         }
     }
 

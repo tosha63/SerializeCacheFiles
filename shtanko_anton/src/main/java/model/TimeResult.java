@@ -1,5 +1,7 @@
 package model;
 
+import utils.DateUtils;
+
 import java.io.*;
 import java.time.LocalDateTime;
 
@@ -9,11 +11,6 @@ public class TimeResult implements Serializable {
     private LocalDateTime serializationDate;
     private LocalDateTime deserializationDate;
 
-    public TimeResult(LocalDateTime createDate, LocalDateTime serializationDate, LocalDateTime deserializationDate) {
-        this.createDate = createDate;
-        this.serializationDate = serializationDate;
-        this.deserializationDate = deserializationDate;
-    }
 
     private void writeObject(ObjectOutputStream out) throws IOException, InterruptedException{
         setCreateDate(LocalDateTime.now());
@@ -38,18 +35,6 @@ public class TimeResult implements Serializable {
 
     public void setDeserializationDate(LocalDateTime deserializationDate) {
         this.deserializationDate = deserializationDate;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
-    }
-
-    public LocalDateTime getSerializationDate() {
-        return serializationDate;
-    }
-
-    public LocalDateTime getDeserializationDate() {
-        return deserializationDate;
     }
 
     @Override
