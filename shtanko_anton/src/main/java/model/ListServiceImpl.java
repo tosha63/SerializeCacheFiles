@@ -1,14 +1,10 @@
 package model;
 
-import utils.SerializeUtils;
-
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ListServiceImpl implements Service, Serializable {
+public class ListServiceImpl implements Service {
 
 
     public ListServiceImpl() {
